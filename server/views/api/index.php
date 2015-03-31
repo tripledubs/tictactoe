@@ -38,8 +38,8 @@ mode
 move
 	Description: place a move
 	Method: POST
-	Inputs: string	gameId
-		string	playerId
+	Inputs: string	gameid
+		string	playerid
 		int	position
 	Response: true
 	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=move&gameid=123ghv1234jb&playerid=2131231&position=0	
