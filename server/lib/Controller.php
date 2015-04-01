@@ -23,12 +23,20 @@
 	        }
 	
 	        // create database connection
-	        $this->db = oci_connect ( DB_USER, DB_PASS, "gqian:1521/orcl" );
-	        if ($this->db == false) {
-	        	$e = oci_error ();
-	        	die($e);
-	        	//TODO: add error page
+	        if(DB_TYPE == "oracle"){
+	        	$this->db = oci_connect ( DB_USER, DB_PASS, "gqian:1521/orcl" );
+	        	if ($this->db == false) {
+	        		$e = oci_error ();
+	        		die($e);
+	        		//TODO: add error page
+	        	}
 	        }
+	        else{
+	        	//mysql
+	        	$options = array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ARRAY, PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING);
+	        	$this->db = new PDO(DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8', DB_USER, DB_PASS, $options);
+	        }
+	        
 	        
 	        // create a view object (that does nothing, but provides the view render() method)
 	        $this->view = new View();

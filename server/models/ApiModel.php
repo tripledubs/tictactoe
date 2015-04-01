@@ -15,23 +15,39 @@ class ApiModel {
 	public function start($boardSize){
 
 		//create random id
-		$gameId = file_get_contents('/dev/urandom', false, null, 0, 16);
+		$gameId = file_get_contents('/dev/urandom', false, null, 0, 2);
 		$gameId = bin2hex($gameId);
 		
 		$gamedata = Array("","","","","","","","","");
 		
 		//insert into database
 		$sql = "Insert INTO games (gid, status, gamemode, gamedata) VALUES (:gid, 0, 'tictactoe', :gamedata)";
-		$cursor = oci_parse($this->db, $sql);
-		oci_bind_by_name($cursor, ':gid', $gameId, -1);
-		oci_bind_by_name($cursor, ':gamedata', json_encode($gamedata, true), -1);
-		$result = oci_execute($cursor);
-		
-		//check for error
-		if ($result == false){
-			$e = oci_error($cursor);
-			header("HTTP/1.1 400 Bad Request");
-			die(MESSAGE_DATABASE_ERROR);
+		if(DB_TYPE == "oracle"){
+			$cursor = oci_parse($this->db, $sql);
+			oci_bind_by_name($cursor, ':gid', $gameId, -1);
+			oci_bind_by_name($cursor, ':gamedata', json_encode($gamedata, true), -1);
+			$result = oci_execute($cursor);
+			
+			//check for error
+			if ($result == false){
+				$e = oci_error($cursor);
+				header("HTTP/1.1 400 Bad Request");
+				die(MESSAGE_DATABASE_ERROR);
+			}
+		}
+		else{
+			try{
+				$stmt = $this->db->prepare($sql);
+				$stmt->bindParam(':gid', $gameId, PDO::PARAM_STR);
+				$stmt->bindParam(':gamedata', json_encode($gamedata, true), PDO::PARAM_STR);
+				$stmt->execute();
+				//$result = $stmt->fetchAll();
+			}
+			catch(PDOException $e)
+			{
+				//$errar = $e->errorInfo[2];
+				die(MESSAGE_DATABASE_ERROR);
+			}
 		}
 		
 		//return
@@ -66,18 +82,35 @@ class ApiModel {
 		}
 		
 		//update db
-		$cursor = oci_parse($this->db, $sql);
-		oci_bind_by_name($cursor, ':gid', $gameId, -1);
-		oci_bind_by_name($cursor, ':pid', $playerId, -1);
-		$result = oci_execute($cursor);
-	
-		//check for error
-		if ($result == false){
-			$e = oci_error($cursor);
-			header("HTTP/1.1 400 Bad Request");
-			die(MESSAGE_DATABASE_ERROR);
+		if(DB_TYPE == "oracle"){
+			$cursor = oci_parse($this->db, $sql);
+			oci_bind_by_name($cursor, ':gid', $gameId, -1);
+			oci_bind_by_name($cursor, ':pid', $playerId, -1);
+			$result = oci_execute($cursor);
+		
+			//check for error
+			if ($result == false){
+				$e = oci_error($cursor);
+				header("HTTP/1.1 400 Bad Request");
+				die(MESSAGE_DATABASE_ERROR);
+			}
 		}
-	
+		else{
+			try{
+				$stmt = $this->db->prepare($sql);
+				$stmt->bindParam(':gid', $gameId, PDO::PARAM_STR);
+				$stmt->bindParam(':pid', $playerId, PDO::PARAM_STR);
+				$stmt->execute();
+				//$result = $stmt->fetchAll();
+			}
+			catch(PDOException $e)
+			{
+				//$errar = $e->errorInfo[2];
+				die(MESSAGE_DATABASE_ERROR);
+			}
+		}
+		
+		
 		//return
 		return $playerId;
 	}
@@ -123,15 +156,15 @@ class ApiModel {
 	public function move($gameId, $playerId, $position){
 		//define valid moves for slide mode
 		$validMoves = array();
-		$validMoves[] = array(1,3);
+		$validMoves[] = array(1,3,4);
 		$validMoves[] = array(0,2,4);
-		$validMoves[] = array(1,5);
+		$validMoves[] = array(1,5,4);
 		$validMoves[] = array(0,4,6);
-		$validMoves[] = array(1,3,5,7);
+		$validMoves[] = array(0,1,2,3,4,5,6,7);
 		$validMoves[] = array(2,4,8);
-		$validMoves[] = array(3,7);
+		$validMoves[] = array(3,7,4);
 		$validMoves[] = array(4,6,8);
-		$validMoves[] = array(5,7);
+		$validMoves[] = array(5,7,4);
 		
 		
 		//grab the game
@@ -273,19 +306,38 @@ class ApiModel {
 
 		//update db
 		$sql = "UPDATE games SET gameData=:gameData, status=:status, gameMode=:gameMode WHERE gid=:gid";
-		$cursor = oci_parse($this->db, $sql);
-		oci_bind_by_name($cursor, ':gid', $gameId, -1);
-		oci_bind_by_name($cursor, ':gameData', json_encode($grid, true), -1);
-		oci_bind_by_name($cursor, ':status', $status, -1);
-		oci_bind_by_name($cursor, ':gameMode', $mode, -1);
-		$result = oci_execute($cursor);
-		
-		//check for error
-		if ($result == false){
-			$e = oci_error($cursor);
-			header("HTTP/1.1 400 Bad Request");
-			die(MESSAGE_DATABASE_ERROR);
+		if(DB_TYPE == "oracle"){
+			$cursor = oci_parse($this->db, $sql);
+			oci_bind_by_name($cursor, ':gid', $gameId, -1);
+			oci_bind_by_name($cursor, ':gameData', json_encode($grid, true), -1);
+			oci_bind_by_name($cursor, ':status', $status, -1);
+			oci_bind_by_name($cursor, ':gameMode', $mode, -1);
+			$result = oci_execute($cursor);
+			
+			//check for error
+			if ($result == false){
+				$e = oci_error($cursor);
+				header("HTTP/1.1 400 Bad Request");
+				die(MESSAGE_DATABASE_ERROR);
+			}
 		}
+		else{
+			try{
+				$stmt = $this->db->prepare($sql);
+				$stmt->bindParam(':gid', $gameId, PDO::PARAM_STR);
+				$stmt->bindParam(':gameData', json_encode($grid, true), PDO::PARAM_STR);
+				$stmt->bindParam(':status', $status, PDO::PARAM_STR);
+				$stmt->bindParam(':gameMode', $mode, PDO::PARAM_STR);
+				$stmt->execute();
+				//$result = $stmt->fetchAll();
+			}
+			catch(PDOException $e)
+			{
+				//$errar = $e->errorInfo[2];
+				die(MESSAGE_DATABASE_ERROR);
+			}
+		}
+		
 		
 		return true;
 		
@@ -343,18 +395,39 @@ class ApiModel {
 	private function getGame($gameId){
 		
 		$sql = "SELECT * FROM games WHERE gid=:gid";
-		$cursor = oci_parse($this->db, $sql);
-		oci_bind_by_name($cursor, ':gid', $gameId, -1);
-		$result = oci_execute($cursor);
 		
-		//check for error
-		if ($result == false){
-			$e = oci_error($cursor);
-			header("HTTP/1.1 400 Bad Request");
-			die(MESSAGE_DATABASE_ERROR);
+		
+		if(DB_TYPE == "oracle"){
+			$cursor = oci_parse($this->db, $sql);
+			oci_bind_by_name($cursor, ':gid', $gameId, -1);
+			$result = oci_execute($cursor);
+			
+			//check for error
+			if ($result == false){
+				$e = oci_error($cursor);
+				header("HTTP/1.1 400 Bad Request");
+				die(MESSAGE_DATABASE_ERROR);
+			}
+			
+			$values = oci_fetch_array($cursor);
+		}
+		else{
+			try{
+				$stmt = $this->db->prepare($sql);
+				$stmt->bindParam(':gid', $gameId, PDO::PARAM_STR);
+				$stmt->bindParam(':gameData', json_encode($grid, true), PDO::PARAM_STR);
+				$stmt->bindParam(':status', $status, PDO::PARAM_STR);
+				$stmt->bindParam(':gameMode', $mode, PDO::PARAM_STR);
+				$stmt->execute();
+				$values = $stmt->fetchAll();
+			}
+			catch(PDOException $e)
+			{
+				//$errar = $e->errorInfo[2];
+				die(MESSAGE_DATABASE_ERROR);
+			}
 		}
 		
-		$values = oci_fetch_array($cursor);
 		
 
 		return $values;

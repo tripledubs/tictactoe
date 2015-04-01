@@ -25,7 +25,6 @@ class API extends Controller
 	
 	//starts a new game
 	function start(){
-
 		//grab input
 		if(isset($_REQUEST['boardSize'])){
 			$boardSize = $_GET['boardSize'];
@@ -86,9 +85,17 @@ class API extends Controller
 	
 		//process request
 		$status = $model->status($gameId);
-	
-		//return
 		echo $status;
+		if(isset($_REQUEST['longpolling'])){
+			$newstatus = $model->status($gameId);
+			while($status == $newstatus && $newstatus != 3 && $newstatus != 4){
+				$newstatus = $model->status($gameId);
+			}
+			echo $newstatus;
+		}
+		else{
+			echo $status;
+		}
 	}
 	
 	//get mode
