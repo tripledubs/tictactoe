@@ -77,24 +77,9 @@ class API extends Controller
 		//to do this the client needs to shre what the old status was so that I can no if it has changed
 		//this however causes the server to hange
 		//TODO fix long polling
-		$status = $model->status($gameId);
-		echo $status;
-//  		if( isset($_REQUEST['longpolling']) && isset($_REQUEST['status']) ){
-//  			$oldStatus = $_REQUEST['status'];
-//  			//dont wait any longer than 30 secs
-//  			//die("the status is $status");
-//  			for($i = 0; $i < 30; $i++){
-//  				if($status != $oldStatus || $status == "3" || $status == "4"){
-//  					die($status);
-//  				}
-//  				$status = $model->status($gameId);
-//  				sleep(1);
-//  			}
-//  			echo $status;
-//  		}
-//  		else{
-//  			echo $status;
-//  		}
+ 		$status = $model->status($gameId);
+ 		echo $status;
+
 	}
 	
 	//get mode

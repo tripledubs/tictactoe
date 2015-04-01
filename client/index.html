@@ -1,5 +1,5 @@
 <html>
-	<head>
+    <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <style>
             .square {
@@ -19,15 +19,9 @@
             }
         
         </style>
-	</head>
+    </head>
     <body>
-    <h1>Client</h1>
-        <p>
-            This is a client demo for a potential implementation of the commitee's game protocal using a the ReST architecture. <br>
-            This is only a prototype.
-            
-            <br>For server documentation go here <a target="_blank" href="http://cs2.uco.edu/~gq011/tictactoe/server/">http://cs2.uco.edu/~gq011/tictactoe/server/</a>
-        </p>
+
         <hr>
         <button onclick="startGame();" >New Game</button>
         <br>OR<br>
@@ -38,322 +32,336 @@
         <div id=gameIDContainer ></div>
         <div id=gameContainer ></div>
         <div id=debug ></div>
-		
-		<script>
-			var serverURL = "https://172.16.142.60/dev/tictactoe/server/";
-		
-		   //grab a new game id, than add myself as a player
-		   //then create a game object
-		   var game = null;
-		   function startGame(){
-			   //stop any current games
-			   if(game != null) {
-				   clearInterval(game.intervalId);
-			   }
-			   
-
-			   //get game id
-				$.get(serverURL+"?controller=api&method=start", function(gameId){
-					//get player id for player 1
-						$.get(serverURL+"?controller=api&method=connect&gameid="+gameId, function(playerid){
-
-							$('#gameIDContainer').html("Game ID: "+gameId);
-							//start game
-							game = new Game(gameId, playerid, 1);
-							game.grid.updateContainer();
-						}).fail(function(jqXHR) {
-							$('#gameContainer').html(jqXHR.responseText);
-						});
-				}).fail(function(jqXHR) {
-					$('#gameContainer').html(jqXHR.responseText);
-				});
-		   }
-		   
-		   //join the game and create a game object
-		   function joinGame(){
-			 //stop any current games
+        
+        <script>
+            //var serverURL = "http://cs2.uco.edu/~gq011/tictactoe/server/";
+            var serverURL = "https://172.16.142.60/dev/tictactoe/server/";
+        
+           //grab a new game id, than add myself as a player
+           //then create a game object
+           var game = null;
+           function startGame(){
+               //stop any current games
                if(game != null) {
                    clearInterval(game.intervalId);
                }
-			 
-				//get game id
-				gameId = $('#joinGameId').val().trim();
-				//get player id for player 2
-				$.get(serverURL+"?controller=api&method=connect&gameid="+gameId, function(playerid){
-					//start game
-					game = new Game(gameId, playerid, 2);
-					game.grid.updateContainer();
-				}).fail(function(jqXHR) {
-					$('#gameContainer').html(jqXHR.responseText);
-				});
-		   }
-		
-			//extend the Array class with the method contains
-			Array.prototype.contains = function(element){
-			    return this.indexOf(element) > -1;
-			};
+               
+
+               //get game id
+                $.get(serverURL+"?controller=api&method=start", function(gameId){
+                    //get player id for player 1
+                        $.get(serverURL+"?controller=api&method=connect&gameid="+gameId, function(playerid){
+
+                            $('#gameIDContainer').html("Game ID: "+gameId);
+                            //start game
+                            game = new Game(gameId, playerid, 1);
+                            game.grid.updateContainer();
+                        }).fail(function(jqXHR) {
+                            $('#gameContainer').html(jqXHR.responseText);
+                        });
+                }).fail(function(jqXHR) {
+                    $('#gameContainer').html(jqXHR.responseText);
+                });
+           }
+           
+           //join the game and create a game object
+           function joinGame(){
+             //stop any current games
+               if(game != null) {
+                   clearInterval(game.intervalId);
+               }
+             
+                //get game id
+                gameId = $('#joinGameId').val().trim();
+                //get player id for player 2
+                $.get(serverURL+"?controller=api&method=connect&gameid="+gameId, function(playerid){
+                    //start game
+                    game = new Game(gameId, playerid, 2);
+                    game.grid.updateContainer();
+                }).fail(function(jqXHR) {
+                    $('#gameContainer').html(jqXHR.responseText);
+                });
+           }
+        
+            //extend the Array class with the method contains
+            Array.prototype.contains = function(element){
+                return this.indexOf(element) > -1;
+            };
 
 
-			//this class renders the button
-			var Square = function(position, grid) {
-		        var self = this;
-		        self.construct = function()
-		        {
-		        	//need this for the onclick event
-		        	self.parentGrid = grid;
-		        	
-		        	//0-9
-		            self.position = position;
-		            
-		            //list of ideas for the html classes
-		            ids = ["ul","um","ur","ml","mm","mr","bl","bm","br"];
-		            
-		            
-		            self.id = ids[position];
-		            self.value = "";
-		            self.canMove = false; //when set to true the button is active
-		        };
-		         
-		        //render function
-		        self.renderTo = function($container)
-	            {
-		        	$div = $('<div class=square id='+self.id+' ></div>');
-		        	$button = $('<button>'+self.value+'</button>');
-	                
-		        	if(self.canMove){
-		        		$button.click(function(){
-		                     self.parentGrid.move(self);
-		                });
-		        	}
-		        	else{
-		        		$button.attr('disabled',true);
-		        	}
-		        	$div.append($button);
-	                $container.append($div);
-	            };
-	            
-	            //Javascript doesnt have real classes just nested functions, so I need to call the constructer
-		        self.construct();
-		    };
-		    
-		    
-		    //this class is a container for the Square objects
-			var Grid = function(containerId, game) {
-		        var self = this;
-		        
-		        self.construct = function() {
-		        	//get selector for the container
-		            self.container = $('#'+containerId);
-		        	
-		        	//to access stuff in game class
-		            self.game = game;
-		        	
-		        	//create the Square objects
-		            self.squares = [];
-		            for(var i=0; i<9; i++){
-		            	square = new Square(i, self);
-		            	self.squares.push(square);
-		            }
-		        };
+            //this class renders the button
+            var Square = function(position, grid) {
+                var self = this;
+                self.construct = function()
+                {
+                    //need this for the onclick event
+                    self.parentGrid = grid;
+                    
+                    //0-9
+                    self.position = position;
+                    
+                    //list of ideas for the html classes
+                    ids = ["ul","um","ur","ml","mm","mr","bl","bm","br"];
+                    
+                    
+                    self.id = ids[position];
+                    self.value = "";
+                    self.canMove = false; //when set to true the button is active
+                };
+                 
+                //render function
+                self.renderTo = function($container)
+                {
+                    $div = $('<div class=square id='+self.id+' ></div>');
+                    $button = $('<button>'+self.value+'</button>');
+                    
+                    if(self.canMove){
+                        $button.click(function(){
+                             self.parentGrid.move(self);
+                        });
+                    }
+                    else{
+                        $button.attr('disabled',true);
+                    }
+                    $div.append($button);
+                    $container.append($div);
+                };
+                
+                //Javascript doesnt have real classes just nested functions, so I need to call the constructer
+                self.construct();
+            };
+            
+            
+            //this class is a container for the Square objects
+            var Grid = function(containerId, game) {
+                var self = this;
+                
+                self.construct = function() {
+                    //get selector for the container
+                    self.container = $('#'+containerId);
+                    
+                    //to access stuff in game class
+                    self.game = game;
+                    
+                    //create the Square objects
+                    self.squares = [];
+                    for(var i=0; i<9; i++){
+                        square = new Square(i, self);
+                        self.squares.push(square);
+                    }
+                };
 
-		        //this is called whenever the game grid changes
-		        //I need to loop over the Square objects and update their states
-				self.update = function(gridData, mode, turn, player){
+                //this is called whenever the game grid changes
+                //I need to loop over the Square objects and update their states
+                self.update = function(gridData, mode, turn, player){
 
-					//to only show buttons for available moves
-					if(mode == "slide"){
-						//valid moves for slide mode
-						validMoves = [ [1,3,4],[0,2,4],[1,5,4],[0,4,6],[0,1,2,3,4,5,6,7],[2,4,8],[3,7,4],[4,6,8],[5,7,4] ];
-				        
-				        
-						//detect which square is empty
-						for(var i=0; i<9; i++){
+                    //to only show buttons for available moves
+                    if(mode == "slide"){
+                        //valid moves for slide mode
+                        validMoves = [ [1,3,4],[0,2,4],[1,5,4],[0,4,6],[0,1,2,3,4,5,6,7],[2,4,8],[3,7,4],[4,6,8],[5,7,4] ];
+                        
+                        
+                        //detect which square is empty
+                        for(var i=0; i<9; i++){
                             if(gridData[i] == ""){
                                 emptySquare = i;
                             }
                         }
-						
-						//it must be the playesr turn, 
-						//the square must be a valid move
-						//else its deactivates
-						for(var i=0; i<9; i++){
-							if(player == turn){
-								if(player == gridData[i] && validMoves[i].contains(emptySquare)) {
-									//the move is valid
-									self.squares[i].canMove = true;
-								}
-							}
-							else {
-								//it is not your turn
-								self.squares[i].canMove = false;
-							}
-							self.squares[i].value=gridData[i];
-						}
+                        
+                        //it must be the playesr turn, 
+                        //the square must be a valid move
+                        //else its deactivates
+                        for(var i=0; i<9; i++){
+                            if(player == turn){
+                                if(player == gridData[i] && validMoves[i].contains(emptySquare)) {
+                                    //the move is valid
+                                    self.squares[i].canMove = true;
+                                }
+                            }
+                            else {
+                                //it is not your turn
+                                self.squares[i].canMove = false;
+                            }
+                            self.squares[i].value=gridData[i];
+                        }
 
-					}
-					else {
-						//tictactoe mode is much simpler
-						for(var i=0; i<9; i++){
-							if(player == turn){
-								//it is your turn
-								if(gridData[i] == ""){
-									self.squares[i].canMove = true;
-								}
-							}
-							else{
-								//it is not your turn
-								self.squares[i].canMove = false;
-							}
-							self.squares[i].value=gridData[i];
-			            }
-					}
-				};
-		        
-		        //this function clears the container and calls render
-		        self.updateContainer = function() {
-		        	self.container.html('');
-		            self.renderTo(self.container);
-		        };
-		        
-		        //render
-		        self.renderTo = function($container)
-		        {
-		        	$container.append('<span class=message >'+self.game.message+'</span>');
-		            $grid = $('<div id=grid></div>');
-		            for(var i=0; i<self.squares.length; i++){
-		            	square = self.squares[i];
-		            	square.renderTo($grid);
-		            }
-		            $container.append($grid);
-		        };
-		        
-		        //the onclick event of a square
-		        self.move = function(square) {
-		        	self.game.move(square.position);
-	            };
-		        
-		        self.construct();
-		    };
-		    
-		    
-		    //this function handels the communication with the server
-		    var Game = function(gameId, playerid, playerNumber) {
-	            var self = this;
-	            
-	            self.construct = function() {
-	            	//create a grid
-					self.grid = new Grid('gameContainer', this);
-					
-	            	//set vars
-	            	self.gameId = gameId
-					self.playerid = playerid
-					self.playerNumber = playerNumber;
-					self.message = "Loading...";
-					
-	            	//status starts at 0
-	            	self.status = -1;
-	            	
-	            	//mode starts at 'tictactoe'
-	                self.mode="tictactoe";
-	            	
-	                //saving the grid for debug
-					self.gridData = []; 
-					
-	                //set the player value from the player number
-					if(self.playerNumber == 1){
-						self.playerValue = "X";
-					}
-					else{
-						self.playerValue = "O";
-					}
+                    }
+                    else {
+                        //tictactoe mode is much simpler
+                        for(var i=0; i<9; i++){
+                            if(player == turn){
+                                //it is your turn
+                                if(gridData[i] == ""){
+                                    self.squares[i].canMove = true;
+                                }
+                            }
+                            else{
+                                //it is not your turn
+                                self.squares[i].canMove = false;
+                            }
+                            self.squares[i].value=gridData[i];
+                        }
+                    }
+                };
+                
+                //this function clears the container and calls render
+                self.updateContainer = function() {
+                    self.container.html('');
+                    self.renderTo(self.container);
+                };
+                
+                //render
+                self.renderTo = function($container)
+                {
+                    $container.append('<span class=message >'+self.game.message+'</span>');
+                    $grid = $('<div id=grid></div>');
+                    for(var i=0; i<self.squares.length; i++){
+                        square = self.squares[i];
+                        square.renderTo($grid);
+                    }
+                    $container.append($grid);
+                };
+                
+                //the onclick event of a square
+                self.move = function(square) {
+                    self.game.move(square.position);
+                };
+                
+                self.construct();
+            };
+            
+            
+            //this function handels the communication with the server
+            var Game = function(gameId, playerid, playerNumber) {
+                var self = this;
+                
+                self.construct = function() {
+                    //create a grid
+                    self.grid = new Grid('gameContainer', this);
+                    
+                    //set vars
+                    self.gameId = gameId
+                    self.playerid = playerid
+                    self.playerNumber = playerNumber;
+                    self.message = "Loading...";
+                    
+                    //status starts at 0
+                    self.status = -1;
+                    
+                    //mode starts at 'tictactoe'
+                    self.mode="tictactoe";
+                    
+                    //saving the grid for debug
+                    self.gridData = []; 
+                    
+                    //set the player value from the player number
+                    if(self.playerNumber == 1){
+                        self.playerValue = "X";
+                    }
+                    else{
+                        self.playerValue = "O";
+                    }
 
-	                //main update loop
-	                //javascript get requests live on different threads
-	                //there is no wait function
-	                //so to make a request one at a time I chain them together
-					self.intervalId = setInterval(function(){
-							//update status
-							$.get(serverURL+"?controller=api&method=status&longpolling&status="+self.status+"&gameid="+self.gameId, function(status){
-								
-								if(status == 0){
-									
-									self.message = "Waiting on other player to connect: Join game in a seperate window or client with the above ID";
-								}
-								else if(status == 1){
-									self.message = "It is X's turn";
-									self.turn="X";
-								}
-								else if(status == 2){
-									self.message = "It is O's turn";
-									self.turn="O";
-								}
-								else if(status == 3){
-									self.message = "X has won";
-								}
-								else if(status == 4){
-									self.message = "O has won";
-								}
+                    //main update loop
+                    //javascript get requests live on different threads
+                    //there is no wait function
+                    //so to make a request one at a time I chain them together
+//                     self.intervalId = setInterval(function(){
 
-								//update game mode
-								$.get(serverURL+"?controller=api&method=mode&gameid="+self.gameId, function(mode){
-									self.mode = mode;
-		
-									//update the grid
-									$.get(serverURL+"?controller=api&method=grid&gameid="+self.gameId, function(gridData){
-										
-										self.gridData = gridData;
+//                     	self.update();
+//                     },1000);
+                    self.update();
+                };
+                
+                
+                self.update = function(){
+                	
+                	
+                    //update status
+                    $.get(serverURL+"?controller=api&method=status&longpolling&status="+self.status+"&gameid="+self.gameId, function(status){
+                        
+                        if(status == 0){
+                            
+                            self.message = "Waiting on other player to connect: Join game in a seperate window or client with the above ID";
+                        }
+                        else if(status == 1){
+                            self.message = "It is X's turn";
+                            self.turn="X";
+                        }
+                        else if(status == 2){
+                            self.message = "It is O's turn";
+                            self.turn="O";
+                        }
+                        else if(status == 3){
+                            self.message = "X has won";
+                        }
+                        else if(status == 4){
+                            self.message = "O has won";
+                        }
 
-										if(status == 1){
-											turn = "X";
-										}
-										else{
-											turn = "O";
-										}
-										
-										self.grid.update(gridData, mode.trim(), turn, self.playerValue);
-			
-										//no need to update unlass the status changed
-										//if I did the buttons would be un responsive
-										if(self.status != status){
-											self.status = status; //set status before the update
-											self.grid.updateContainer();
-										}
-										else{
-											self.status = status;
-										}
-									}).fail(function(jqXHR) {
-										self.message = jqXHR.responseText;
-									});		
-		
-								}).fail(function(jqXHR) {
-									self.message = jqXHR.responseText;
-								});		
-							}).fail(function(jqXHR) {
-								self.message = jqXHR.responseText;
-							});
+                        //update game mode
+                        $.get(serverURL+"?controller=api&method=mode&gameid="+self.gameId, function(mode){
+                            self.mode = mode;
 
-							//update debug info
-							$('#debug').html("<hr>DEBUG INFO:<br>");
-							$('#debug').append("Mode: "+self.mode+" <br>");
-							$('#debug').append("Grid: "+JSON.stringify(self.gridData)+" <br>");
-							$('#debug').append("Status: "+self.status+" <br>");
-							$('#debug').append("Player Number: "+self.playerNumber+" <br>");
-							$('#debug').append("Player Value: "+self.playerValue+" <br>");
-					
-					},50);
-				};
+                            //update the grid
+                            $.get(serverURL+"?controller=api&method=grid&gameid="+self.gameId, function(gridData){
+                                
+                                self.gridData = gridData;
 
-				//place move
-	            self.move = function(position) {
-					$.get(serverURL+"?controller=api&method=move&gameid="+self.gameId+"&playerid="+self.playerid+"&position="+position, function(data){
-					}).fail(function(jqXHR) {
-						self.message = jqXHR.responseText;
-					});
-	            };
-	            
-	            self.construct();
-	        };
-	        
-		</script>
+                                if(status == 1){
+                                    turn = "X";
+                                }
+                                else{
+                                    turn = "O";
+                                }
+                                
+                                self.grid.update(gridData, mode.trim(), turn, self.playerValue);
+    
+                                //no need to update unlass the status changed
+                                //if I did the buttons would be un responsive
+                                if(self.status != status){
+                                    self.status = status; //set status before the update
+                                    self.grid.updateContainer();
+                                }
+                                else{
+                                    self.status = status;
+                                }
+                                //self.status = status;
+                                self.update();
+                            }).fail(function(jqXHR) {
+                                self.message = jqXHR.responseText;
+                            });     
+
+                        }).fail(function(jqXHR) {
+                            self.message = jqXHR.responseText;
+                        });     
+                    }).fail(function(jqXHR) {
+                        self.message = jqXHR.responseText;
+                    });
+
+//                  //update debug info
+//                  $('#debug').html("<hr>DEBUG INFO:<br>");
+//                  $('#debug').append("Mode: "+self.mode+" <br>");
+//                  $('#debug').append("Grid: "+JSON.stringify(self.gridData)+" <br>");
+//                  $('#debug').append("Status: "+self.status+" <br>");
+//                  $('#debug').append("Player Number: "+self.playerNumber+" <br>");
+//                  $('#debug').append("Player Value: "+self.playerValue+" <br>");
+                	
+                	
+                	
+                };
+
+                //place move
+                self.move = function(position) {
+                    $.get(serverURL+"?controller=api&method=move&gameid="+self.gameId+"&playerid="+self.playerid+"&position="+position, function(data){
+                    }).fail(function(jqXHR) {
+                        self.message = jqXHR.responseText;
+                    });
+                };
+                
+                self.construct();
+            };
+            
+        </script>
     </body>
 </html>

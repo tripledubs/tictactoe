@@ -29,8 +29,8 @@
 	//define('DB_PASS', '#######');
 	define('DB_HOST', '127.0.0.1');
 	define('DB_NAME', 'tictactoe');
-	define('DB_USER', '');
-	define('DB_PASS', '');
+define('DB_USER', 'soc_access');
+define('DB_PASS', '83KsxEzjPu7tATqT');
 	
 	// Messages
 	define('MESSAGE_UNKNOWN_ERROR', 'Unknown Error');
