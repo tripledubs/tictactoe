@@ -411,6 +411,7 @@ class ApiModel {
 			}
 			
 			$values = oci_fetch_array($cursor);
+			$values = array_change_key_case($values, CASE_LOWER);
 		}
 		else{
 			try{
