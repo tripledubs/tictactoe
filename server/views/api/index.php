@@ -6,7 +6,7 @@
 start
 	Description: Initiates a new game
 	Method: GET
-	Inputs: integer	boardsize
+	Inputs: 
 	Response: string gameid
 	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=start&boardsize=3
 
