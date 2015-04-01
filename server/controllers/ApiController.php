@@ -73,18 +73,28 @@ class API extends Controller
 		$model = new ApiModel($this->db);
 	
 		//process request
+		//for long polling I want to wait until the status has changed before sending a response
+		//to do this the client needs to shre what the old status was so that I can no if it has changed
+		//this however causes the server to hange
+		//TODO fix long polling
 		$status = $model->status($gameId);
 		echo $status;
-// 		if(isset($_REQUEST['longpolling'])){
-// 			$newstatus = $model->status($gameId);
-// 			while($status == $newstatus && $newstatus != 3 && $newstatus != 4){
-// 				$newstatus = $model->status($gameId);
-// 			}
-// 			echo $newstatus;
-// 		}
-// 		else{
-// 			echo $status;
-// 		}
+//  		if( isset($_REQUEST['longpolling']) && isset($_REQUEST['status']) ){
+//  			$oldStatus = $_REQUEST['status'];
+//  			//dont wait any longer than 30 secs
+//  			//die("the status is $status");
+//  			for($i = 0; $i < 30; $i++){
+//  				if($status != $oldStatus || $status == "3" || $status == "4"){
+//  					die($status);
+//  				}
+//  				$status = $model->status($gameId);
+//  				sleep(1);
+//  			}
+//  			echo $status;
+//  		}
+//  		else{
+//  			echo $status;
+//  		}
 	}
 	
 	//get mode

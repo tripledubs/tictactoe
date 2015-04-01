@@ -273,7 +273,7 @@
 	                //so to make a request one at a time I chain them together
 					self.intervalId = setInterval(function(){
 							//update status
-							$.get(serverURL+"?controller=api&method=status&gameid="+self.gameId, function(status){
+							$.get(serverURL+"?controller=api&method=status&longpolling&status="+self.status+"&gameid="+self.gameId, function(status){
 								
 								if(status == 0){
 									
@@ -340,7 +340,7 @@
 							$('#debug').append("Player Number: "+self.playerNumber+" <br>");
 							$('#debug').append("Player Value: "+self.playerValue+" <br>");
 					
-					},500);
+					},50);
 				};
 
 				//place move
