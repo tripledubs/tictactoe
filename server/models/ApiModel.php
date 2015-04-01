@@ -67,11 +67,11 @@ class ApiModel {
 			die(MESSAGE_GAME_NOT_FOUND);
 		}
 		
-		if( empty($game['P1ID']) ){
+		if( empty($game['p1id']) ){
 			//add p1
 			$sql = "UPDATE games SET p1id=:pid WHERE gid=:gid";
 		}
-		else if( empty($game['P2ID']) ){
+		else if( empty($game['p2id']) ){
 			//add p2
 			$sql = "UPDATE games SET p2id=:pid, status=1 WHERE gid=:gid";
 		}
@@ -124,8 +124,9 @@ class ApiModel {
 			die(MESSAGE_GAME_NOT_FOUND);
 		}
 	
+
 		//return
-		return $game['STATUS'];
+		return $game['status'];
 	}
 	
 	public function mode($gameId){
@@ -138,7 +139,7 @@ class ApiModel {
 		}
 	
 		//return
-		return $game['GAMEMODE'];
+		return $game['gamemode'];
 	}
 	
 	public function grid($gameId){
@@ -151,7 +152,7 @@ class ApiModel {
 		}
 	
 		//return
-		return $game['GAMEDATA'];
+		return $game['gamedata'];
 	}
 	public function move($gameId, $playerId, $position){
 		//define valid moves for slide mode
@@ -175,11 +176,11 @@ class ApiModel {
 		}
 		
 		//cant move if you're not part of this game
-		if($game['P1ID'] == $playerId){
+		if($game['p1id'] == $playerId){
 			$pvalue = "X";
 			$pnum = 1;
 		}
-		else if($game['P2ID'] == $playerId){
+		else if($game['p2id'] == $playerId){
 			$pvalue = "O";
 			$pnum = 2;
 		}
@@ -189,28 +190,28 @@ class ApiModel {
 		}
 		
 		//must be your turn
-		if($game['STATUS'] == 0){
+		if($game['status'] == 0){
 			header("HTTP/1.1 400 Bad Request");
 			die(MESSAGE_GAME_NOT_STARTED);
 		}
-		else if($game['STATUS'] == 1 && $pnum != 1){
+		else if($game['status'] == 1 && $pnum != 1){
 			header("HTTP/1.1 400 Bad Request");
 			die(MESSAGE_NOT_YOUR_TURN);
 		}
-		else if($game['STATUS'] == 2 && $pnum != 2){
+		else if($game['status'] == 2 && $pnum != 2){
 			header("HTTP/1.1 400 Bad Request");
 			die(MESSAGE_NOT_YOUR_TURN);
 		}
-		else if($game['STATUS'] == 3 || $game['STATUS'] == 4){
+		else if($game['status'] == 3 || $game['status'] == 4){
 			header("HTTP/1.1 400 Bad Request");
 			die(MESSAGE_GAME_OVER);
 		}
 		
 		//parse the game board
-		$grid = json_decode($game['GAMEDATA']);
+		$grid = json_decode($game['gamedata']);
 		
 		$result = false;
-		if($game['GAMEMODE'] == "slide"){
+		if($game['gamemode'] == "slide"){
 			//cant move for another player
 			if($grid[$position] != $pvalue ){
 				header("HTTP/1.1 400 Bad Request");
@@ -274,7 +275,7 @@ class ApiModel {
 		if($status == null){
 				
 			//toggle turn
-			if($game['STATUS'] == 1){
+			if($game['status'] == 1){
 				$status = 2;
 			}
 			else{
@@ -415,11 +416,8 @@ class ApiModel {
 			try{
 				$stmt = $this->db->prepare($sql);
 				$stmt->bindParam(':gid', $gameId, PDO::PARAM_STR);
-				$stmt->bindParam(':gameData', json_encode($grid, true), PDO::PARAM_STR);
-				$stmt->bindParam(':status', $status, PDO::PARAM_STR);
-				$stmt->bindParam(':gameMode', $mode, PDO::PARAM_STR);
 				$stmt->execute();
-				$values = $stmt->fetchAll();
+				$values = $stmt->fetch(PDO::FETCH_ASSOC);
 			}
 			catch(PDOException $e)
 			{

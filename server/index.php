@@ -9,6 +9,9 @@ require 'lib/Application.php';
 require 'lib/Controller.php';
 require 'lib/View.php';
 
+//allow ajax calls from other domains
+header('Access-Control-Allow-Origin: *');
+
 
 // Start the application
 $app = new Application();

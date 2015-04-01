@@ -40,7 +40,7 @@
         <div id=debug ></div>
 		
 		<script>
-			
+			var serverURL = "https://172.16.142.60/dev/tictactoe/server/";
 		
 		   //grab a new game id, than add myself as a player
 		   //then create a game object
@@ -53,9 +53,9 @@
 			   
 
 			   //get game id
-				$.get("http://cs2.uco.edu/~gq011/tictactoe/server/?controller=api&method=start&boardSize=3", function(gameId){
+				$.get(serverURL+"?controller=api&method=start", function(gameId){
 					//get player id for player 1
-						$.get("http://cs2.uco.edu/~gq011/tictactoe/server/?controller=api&method=connect&gameid="+gameId, function(playerid){
+						$.get(serverURL+"?controller=api&method=connect&gameid="+gameId, function(playerid){
 
 							$('#gameIDContainer').html("Game ID: "+gameId);
 							//start game
@@ -79,7 +79,7 @@
 				//get game id
 				gameId = $('#joinGameId').val().trim();
 				//get player id for player 2
-				$.get("http://cs2.uco.edu/~gq011/tictactoe/server/?controller=api&method=connect&gameid="+gameId, function(playerid){
+				$.get(serverURL+"?controller=api&method=connect&gameid="+gameId, function(playerid){
 					//start game
 					game = new Game(gameId, playerid, 2);
 					game.grid.updateContainer();
@@ -273,7 +273,7 @@
 	                //so to make a request one at a time I chain them together
 					self.intervalId = setInterval(function(){
 							//update status
-							$.get("http://cs2.uco.edu/~gq011/tictactoe/server/?controller=api&method=status&longpolling=1&gameid="+self.gameId, function(status){
+							$.get(serverURL+"?controller=api&method=status&gameid="+self.gameId, function(status){
 								
 								if(status == 0){
 									
@@ -295,11 +295,11 @@
 								}
 
 								//update game mode
-								$.get("http://cs2.uco.edu/~gq011/tictactoe/server/?controller=api&method=mode&gameid="+self.gameId, function(mode){
+								$.get(serverURL+"?controller=api&method=mode&gameid="+self.gameId, function(mode){
 									self.mode = mode;
 		
 									//update the grid
-									$.get("http://cs2.uco.edu/~gq011/tictactoe/server/?controller=api&method=grid&gameid="+self.gameId, function(gridData){
+									$.get(serverURL+"?controller=api&method=grid&gameid="+self.gameId, function(gridData){
 										
 										self.gridData = gridData;
 
@@ -345,7 +345,7 @@
 
 				//place move
 	            self.move = function(position) {
-					$.get("http://cs2.uco.edu/~gq011/tictactoe/server/?controller=api&method=move&gameid="+self.gameId+"&playerid="+self.playerid+"&position="+position, function(data){
+					$.get(serverURL+"?controller=api&method=move&gameid="+self.gameId+"&playerid="+self.playerid+"&position="+position, function(data){
 					}).fail(function(jqXHR) {
 						self.message = jqXHR.responseText;
 					});

@@ -13,9 +13,6 @@ class API extends Controller
 	public function __construct()
 	{
 		parent::__construct();
-		
-		//allow ajax calls from other domains
-		header("access-control-allow-origin: *");
 	}
 	
 	//display the apis page
@@ -25,14 +22,6 @@ class API extends Controller
 	
 	//starts a new game
 	function start(){
-		//grab input
-		if(isset($_REQUEST['boardSize'])){
-			$boardSize = $_GET['boardSize'];
-		}
-		else {
-			header("HTTP/1.1 400 Bad Request");
-			die(MESSAGE_INVALID_COMMAND);
-		}
 		
 		//get model
 		require MODELS_PATH . 'ApiModel.php';
@@ -86,16 +75,16 @@ class API extends Controller
 		//process request
 		$status = $model->status($gameId);
 		echo $status;
-		if(isset($_REQUEST['longpolling'])){
-			$newstatus = $model->status($gameId);
-			while($status == $newstatus && $newstatus != 3 && $newstatus != 4){
-				$newstatus = $model->status($gameId);
-			}
-			echo $newstatus;
-		}
-		else{
-			echo $status;
-		}
+// 		if(isset($_REQUEST['longpolling'])){
+// 			$newstatus = $model->status($gameId);
+// 			while($status == $newstatus && $newstatus != 3 && $newstatus != 4){
+// 				$newstatus = $model->status($gameId);
+// 			}
+// 			echo $newstatus;
+// 		}
+// 		else{
+// 			echo $status;
+// 		}
 	}
 	
 	//get mode

@@ -15,7 +15,7 @@
 	//ini_set("display_errors", 1);
 	
 	//Base URL
-	define('URL', 'http://cs2.uco.edu/~gq011/tictactoe/server/');
+	define('URL', 'https://172.16.142.60/dev/tictactoe/server/');
 	
 	//Paths
 	define('LIBS_PATH', 'lib/');
