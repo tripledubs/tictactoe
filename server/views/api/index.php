@@ -7,20 +7,20 @@ start
 	Description: Initiates a new game
 	Method: GET
 	Inputs: integer	boardsize
-	Response: string gameId
+	Response: string gameid
 	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=start&boardsize=3
 
 connect
 	Description: Joins a player to a game and returns a player id
 	Method: GET
-	Inputs: string	gameId
-	Response: string playerId
+	Inputs: string	gameid
+	Response: string playerid
 	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=connect&gameid=123ghv1234jb	
 
 status
 	Description: Get the status of the game
 	Method: GET
-	Inputs: string	gameId 
+	Inputs: string	gameid 
 	Response: int 0 = game has not started yet
 			  int 1 = player 1's turn
 			  int 2 = player 2's turn
@@ -31,7 +31,7 @@ status
 mode
 	Description: Get the mode of the game
 	Method: GET
-	Inputs: string	gameId 
+	Inputs: string	gameid 
 	Response: string tictactoe|slide
 	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=mode&gameid=123ghv1234jb	
 	
@@ -47,7 +47,7 @@ move
 grid
 	Description: fetch the current game grid
 	Method: POST
-	Inputs: string	gameId
+	Inputs: string	gameid
 	Response: JSON array
 	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=grid&gameid=123ghv1234jb	
 
