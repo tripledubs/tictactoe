@@ -3,10 +3,11 @@ Client server TicTacToe Game with additional death match rules
 
 Prototype implementation using ReST
 
+<a href="https://docs.google.com/document/d/1gCbw2i3LLnerep4s8OKk0YkZLuBFC4VmvacwqpfUoWE/"> Official Docs </a>
+
 <b>APIs</b>
 <br/>
 
-<a href="https://docs.google.com/document/d/1gCbw2i3LLnerep4s8OKk0YkZLuBFC4VmvacwqpfUoWE/"> Official Docs </a>
 <pre>
 
 start
