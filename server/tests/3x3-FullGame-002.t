@@ -1,16 +1,15 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use lib 'tests';
+use lib '.';
 use Carp;
 use URI;
 use LWP;
 use Test::More;
-use tttt; #exports server
+use tttt;
 
 my $ua = LWP::UserAgent->new;
 $ua->timeout(1);
-
 my $link = URI->new(server);
 
 sub interactServer {
@@ -48,29 +47,35 @@ my $move = makeMove( $gameID, $player1, '1' );
 $gameStatus = interactServer( 'status', gameid => $gameID );
 is( $gameStatus, 2, "Second players turn to move" );
 
-my @game = (
-   [ $player1 => 0 ],
-   [ $player2 => 1 ],
-   [ $player1 => 2 ],
-   [ $player2 => 3 ],
-   [ $player1 => 4 ],
-   [ $player2 => 5 ],
-);
+my @game = ( 0, 1, 2, 4, 5, );
 
 # The first 6 turns..
 my $player1sTurn = 1;
 for (@game) {
-   makeMove( $gameID, $_->[0], $_->[1] );
-   $player1sTurn = ( $player1sTurn == 1 ) ? 2 : 1;
+   my $player = ( $player1sTurn == 1 ) ? $player1 : $player2;
+   makeMove( $gameID, $player, $_ );
+   $player1sTurn = ( $player eq $player1 ) ? 2 : 1;
    is( interactServer( 'status', gameid => $gameID ),
-      $player1sTurn, "Moved $_->[1], changed turns.." );
+      $player1sTurn, "Moved $_, changed turns.." );
 }
 
-is( makeMove( $gameID, $player1, 6 ), 1, "Player 1 final move" );
-is( interactServer( 'status', gameid => $gameID ), 3, "First player has won!" );
+is( makeMove( $gameID, $player2, 7 ), 1, "Player 2 final move" );
+is( interactServer( 'status', gameid => $gameID ), 4,
+   "Second player has won!" );
 
+# test 1
 # X O X
 # 0 X 0
 # X
+
+# Test 2
+# O _ X
+# O X X
+# O _ _
+
+# Test 3
+# X O X
+#   O X
+# X 0 _
 
 done_testing();

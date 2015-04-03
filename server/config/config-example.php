@@ -1,4 +1,6 @@
 <?php 
+
+    // This file should be renamed config.php
 	//this prevents someone from bypassing the index.php file and going directly here
 	if(!defined('_EXEC'))
 	{
@@ -15,7 +17,7 @@
 	//ini_set("display_errors", 1);
 	
 	//Base URL
-	define('URL', 'https://172.16.142.60/dev/tictactoe/server/');
+	define('URL', 'CHANGE_ME/tictactoe/server/');
 	
 	//Paths
 	define('LIBS_PATH', 'lib/');
@@ -24,13 +26,11 @@
 	define('VIEWS_PATH', 'views/');
 	
 	//Database
-	define('DB_TYPE', 'mysql');
-	//define('DB_USER', 'gq011');
-	//define('DB_PASS', '#######');
-	define('DB_HOST', '127.0.0.1');
-	define('DB_NAME', 'tictactoe');
-define('DB_USER', 'soc_access');
-define('DB_PASS', '83KsxEzjPu7tATqT');
+    define('DB_TYPE', 'mysql');
+    define('DB_HOST', '127.0.0.1');
+    define('DB_NAME', 'CHANGE_ME');
+    define('DB_USER', 'CHANGE_ME');
+    define('DB_PASS', 'CHANGE_ME');
 	
 	// Messages
 	define('MESSAGE_UNKNOWN_ERROR', 'Unknown Error');

@@ -1,12 +1,12 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use lib 'tests';
+use lib '.';
 use Carp;
 use URI;
 use LWP;
 use Test::More;
-use tttt; #exports server
+use tttt;
 
 my $ua = LWP::UserAgent->new;
 $ua->timeout(1);
@@ -49,12 +49,11 @@ $gameStatus = interactServer( 'status', gameid => $gameID );
 is( $gameStatus, 2, "Second players turn to move" );
 
 my @game = (
-   [ $player1 => 0 ],
-   [ $player2 => 1 ],
+   [ $player1 => 4 ],
+   [ $player2 => 0 ],
    [ $player1 => 2 ],
    [ $player2 => 3 ],
-   [ $player1 => 4 ],
-   [ $player2 => 5 ],
+   [ $player1 => 5 ],
 );
 
 # The first 6 turns..
@@ -66,11 +65,18 @@ for (@game) {
       $player1sTurn, "Moved $_->[1], changed turns.." );
 }
 
-is( makeMove( $gameID, $player1, 6 ), 1, "Player 1 final move" );
-is( interactServer( 'status', gameid => $gameID ), 3, "First player has won!" );
+is( makeMove( $gameID, $player2, 6 ), 1, "Player 2 final move" );
+is( interactServer( 'status', gameid => $gameID ), 4,
+   "Second player has won!" );
 
+# test 1
 # X O X
 # 0 X 0
 # X
+
+# Test 2
+# O _ X
+# O X X
+# O _ _
 
 done_testing();
