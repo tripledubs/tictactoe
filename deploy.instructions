@@ -1,6 +1,6 @@
 One way to deploy server: 
 
-1. apache, php, mysql 
+1. Prerequisites: apache, php, mysql 
 
 2. git clone https://github.com/seankelly55/tictactoe (somewhere in apache directories)
 
