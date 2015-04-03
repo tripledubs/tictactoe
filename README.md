@@ -4,7 +4,7 @@ Client server TicTacToe Game with additional death match rules
 Prototype implementation using ReST
 
 <b>APIs</b>
-<br>
+<br/>
 <pre>
 
 start
