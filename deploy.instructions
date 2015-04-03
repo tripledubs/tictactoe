@@ -1,0 +1,38 @@
+One way to deploy server: 
+
+1. apache, php, mysql 
+
+2. git clone https://github.com/seankelly55/tictactoe (somewhere in apache directories)
+
+3. Create database/database user/privileges
+
+(mysql)
+    create database tictactoe;
+    use tictactoe;
+    DROP TABLE games;
+    create table games ( gid varchar(32), p1id varchar(32), p2id varchar(32), status number(2), gamemode varchar(9), gamedata var   char(255) );
+    create user 'tictactoe'@'localhost' identified by 'tictacks'
+    grant all on tictactoe.* to 'tictactoe'@'localhost';
+
+4. cp tictactoe/server/config/config-example.php tictactoe/server/config/config.php
+
+5. Edit config.php
+    Need to define following sufficiently: (URL,DB_NAME,DB_HOST,DB_TYPE,DB_USER,DB_PASS)
+
+    URL:
+        define('URL', 'http://<your ip>/tictactoe/server/');
+    DB_NAME 
+    DB_HOST #127.0.0.0 should work if mysql on same server
+    DB_TYPE
+    DB_USER
+    DB_PASS
+
+
+6. Change the IPs in 
+    tictactoe/client/index.html (var serverURL = "http://<your ip>/tictactoe/server/";)
+    tictactoe/server/views/menu.php
+    tictactoe/client/demo.html
+
+When it's working you should be able to run
+GET 'http://<your ip>/tictactoe/server/?controller=api&method=start&boardSize=3'
+# Should return the gameid
