@@ -5,6 +5,8 @@ Prototype implementation using ReST
 
 <b>APIs</b>
 <br/>
+
+<a href="https://docs.google.com/document/d/1gCbw2i3LLnerep4s8OKk0YkZLuBFC4VmvacwqpfUoWE/"> Official Docs </a>
 <pre>
 
 start
