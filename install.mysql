@@ -1,2 +1,9 @@
 DROP TABLE games;
-create table games ( gid varchar(32), p1id varchar(32), p2id varchar(32), status number(2), gamemode varchar(9), gamedata varchar(255) );
+create table games ( 
+    gid varchar(32), 
+    p1id varchar(32), 
+    p2id varchar(32), 
+    status int(2), 
+    gamemode varchar(9), 
+    gamedata varchar(255) 
+);
