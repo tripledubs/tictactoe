@@ -18,7 +18,7 @@ start
 	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=start&boardsize=3
 
 connect
-	Description: Description: Joins a player to a game and returns a player id. 
+	Description: Joins a player to a game and returns a player id. 
 	First player to connect successfully gets the playerid of p1, first to move. 
 	Second player to connect successfully gets the playerid of p2, second to move. 
 	
