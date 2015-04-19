@@ -15,7 +15,7 @@ start
 	Method: GET
 	Inputs: 
 	Response: string gameid
-	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=start&boardsize=3
+	Example: http://cs2.uco.edu/~gq011/tictactoe/server?controller=api&method=start&boardsize=3
 
 connect
 	Description: Joins a player to a game and returns a player id. 
@@ -25,7 +25,7 @@ connect
 	Method: GET
 	Inputs: string	gameid
 	Response: string playerid
-	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=connect&gameid=123ghv1234jb	
+	Example: http://cs2.uco.edu/~gq011/tictactoe/server?controller=api&method=connect&gameid=123ghv1234jb	
 
 status
 	Description: Get the status of the game
@@ -36,14 +36,14 @@ status
 			  int 2 = player 2's turn
 			  int 3 = player 1 is winner
 			  int 4 = player 2 is winner
-	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=status&gameid=123ghv1234jb	
+	Example: http://cs2.uco.edu/~gq011/tictactoe/server?controller=api&method=status&gameid=123ghv1234jb	
 	
 mode
 	Description: Get the mode of the game
 	Method: GET
 	Inputs: string	gameid 
 	Response: string tictactoe|slide
-	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=mode&gameid=123ghv1234jb	
+	Example: http://cs2.uco.edu/~gq011/tictactoe/server?controller=api&method=mode&gameid=123ghv1234jb	
 	
 move
 	Description: place a move
@@ -52,14 +52,14 @@ move
 		string	playerid
 		int	position
 	Response: true
-	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=move&gameid=123ghv1234jb&playerid=2131231&position=0	
+	Example: http://cs2.uco.edu/~gq011/tictactoe/server?controller=api&method=move&gameid=123ghv1234jb&playerid=2131231&position=0	
 	
 grid
 	Description: fetch the current game grid
 	Method: POST
 	Inputs: string	gameid
 	Response: JSON array
-	Example: http://cs2.uco.edu/~gq011/tictactoe/?controller=api&method=grid&gameid=123ghv1234jb	
+	Example: http://cs2.uco.edu/~gq011/tictactoe/server?controller=api&method=grid&gameid=123ghv1234jb	
 
 	
 	
