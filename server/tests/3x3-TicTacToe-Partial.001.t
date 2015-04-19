@@ -38,6 +38,7 @@ my $player1;
 my $player2;
 my $gameStatus;
 
+# $winner should match output from server
 sub testGame {
     my ($winner,@moves) = @_;
     my $playersTurn = 0;
@@ -49,10 +50,19 @@ sub testGame {
         makeMove($gameID, $playersTurn ? $player2 : $player1, $_);
         $playersTurn = ! $playersTurn;
     }
-    is(interactServer('status',gameid => $gameID),$winner,"$winner is expected");
+    is(interactServer('status',gameid => $gameID),$winner,"Status == $winner");
 }
 testGame(3,4,0,1,2,7);
 testGame(3,4,1,2,3,6);
 testGame(4,0,1,2,4,5,7);
+testGame(2,0,0,0,0,0,0); # Move 2+ should not be accepted, still player ones turn
+testGame(1); # Move 3+ should not be accepted, still player ones turn
+testGame(2,1);
+testGame(1,1,2);
+testGame(2,1,2,3);
+testGame(2,1,2,3,3); #Last move should not be accepted
+testGame(2,1,2,3,3,3); #Last move should not be accepted
+testGame(1,1,2,3,3,3,4); #Last move should be accepted
+
 
 done_testing();
