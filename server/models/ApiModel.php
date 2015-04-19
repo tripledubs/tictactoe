@@ -60,6 +60,7 @@ class ApiModel {
 		$playerId = file_get_contents('/dev/urandom', false, null, 0, 16);
 		$playerId = bin2hex($playerId);
 		
+
 		//grab the game
 		$game = $this->getGame($gameId);
 		if($game == false){
@@ -154,6 +155,12 @@ class ApiModel {
 		//return
 		return $game['gamedata'];
 	}
+
+	public function log($logVar) {
+		$string = var_export($logVar,true);
+		file_put_contents('board.log',$string,FILE_APPEND |LOCK_EX);
+	}
+
 	public function move($gameId, $playerId, $position){
 		//define valid moves for slide mode
 		$validMoves = array();
@@ -167,9 +174,9 @@ class ApiModel {
 		$validMoves[] = array(4,6,8);
 		$validMoves[] = array(5,7,4);
 		
-		
 		//grab the game
 		$game = $this->getGame($gameId);
+
 		if($game == false){
 			header("HTTP/1.1 400 Bad Request");
 			die(MESSAGE_GAME_NOT_FOUND);
@@ -209,6 +216,7 @@ class ApiModel {
 		
 		//parse the game board
 		$grid = json_decode($game['gamedata']);
+		$this->log($grid);
 		
 		$result = false;
 		if($game['gamemode'] == "slide"){
@@ -246,8 +254,8 @@ class ApiModel {
 			}
 		}
 		else {
-			
-			if($grid[$emptySquare] != "" ){
+
+			if($grid[$position] != "" ){
 				header("HTTP/1.1 400 Bad Request");
 				die(MESSAGE_INVALID_COMMAND);
 			}
