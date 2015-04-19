@@ -216,7 +216,6 @@ class ApiModel {
 		
 		//parse the game board
 		$grid = json_decode($game['gamedata']);
-		$this->log($grid);
 		
 		$result = false;
 		if($game['gamemode'] == "slide"){
