@@ -14,17 +14,13 @@ class ApiModel {
 	}
 	public function start($boardSize){
 
-		//create random id
-		$gameId = file_get_contents('/dev/urandom', false, null, 0, 2);
-		$gameId = bin2hex($gameId);
-		
 		$gamedata = Array("","","","","","","","","");
 		
 		//insert into database
-		$sql = "Insert INTO games (gid, status, gamemode, gamedata) VALUES (:gid, 0, 'tictactoe', :gamedata)";
+		$sql = "Insert INTO games (status, gamemode, gamedata) VALUES (0, 'tictactoe', :gamedata)";
 		if(DB_TYPE == "oracle"){
 			$cursor = oci_parse($this->db, $sql);
-			oci_bind_by_name($cursor, ':gid', $gameId, -1);
+			//oci_bind_by_name($cursor, ':gid', $gameId, -1);
 			oci_bind_by_name($cursor, ':gamedata', json_encode($gamedata, true), -1);
 			$result = oci_execute($cursor);
 			
@@ -38,7 +34,7 @@ class ApiModel {
 		else{
 			try{
 				$stmt = $this->db->prepare($sql);
-				$stmt->bindParam(':gid', $gameId, PDO::PARAM_STR);
+				//$stmt->bindParam(':gid', $gameId, PDO::PARAM_STR);
 				$stmt->bindParam(':gamedata', json_encode($gamedata, true), PDO::PARAM_STR);
 				$stmt->execute();
 				//$result = $stmt->fetchAll();
@@ -49,6 +45,21 @@ class ApiModel {
 				die(MESSAGE_DATABASE_ERROR);
 			}
 		}
+		
+		$cursor = oci_parse($this->db, "SELECT gid_seq.currval FROM dual");
+		//oci_bind_by_name($cursor, ':gid', $gameId, -1);
+		//oci_bind_by_name($cursor, ':gamedata', json_encode($gamedata, true), -1);
+		$result = oci_execute($cursor);
+		
+		//check for error
+		if ($result == false){
+			$e = oci_error($cursor);
+			header("HTTP/1.1 400 Bad Request");
+			die(MESSAGE_DATABASE_ERROR);
+		}
+		
+		$gameId = oci_fetch_array($cursor);
+		$gameId = $gameId[0];
 		
 		//return
 		return $gameId;
