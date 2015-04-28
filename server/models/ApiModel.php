@@ -17,7 +17,7 @@ class ApiModel {
 		$gamedata = Array("","","","","","","","","");
 		
 		//insert into database
-		$sql = "Insert INTO games (status, gamemode, gamedata) VALUES (0, 'tictactoe', :gamedata)";
+		$sql = "Insert INTO games (status, gamemode, gamedata, LAST_MOVE_DTM) VALUES (0, 'tictactoe', :gamedata, SYSDATE)";
 		if(DB_TYPE == "oracle"){
 			$cursor = oci_parse($this->db, $sql);
 			//oci_bind_by_name($cursor, ':gid', $gameId, -1);
@@ -81,11 +81,11 @@ class ApiModel {
 		
 		if( empty($game['p1id']) ){
 			//add p1
-			$sql = "UPDATE games SET p1id=:pid WHERE gid=:gid";
+			$sql = "UPDATE games SET p1id=:pid, last_move_dtm = SYSDATE WHERE gid=:gid";
 		}
 		else if( empty($game['p2id']) ){
 			//add p2
-			$sql = "UPDATE games SET p2id=:pid, status=1 WHERE gid=:gid";
+			$sql = "UPDATE games SET p2id=:pid, status=1, last_move_dtm = SYSDATE WHERE gid=:gid";
 		}
 		else {
 			//game is full
@@ -128,13 +128,44 @@ class ApiModel {
 	}
 	
 	public function status($gameId){
-	
+
 		//grab the game
 		$game = $this->getGame($gameId);
 		if($game == false){
 			header("HTTP/1.1 400 Bad Request");
 			die(MESSAGE_GAME_NOT_FOUND);
 		}
+
+		
+		//check time
+		$mins = intval($game['mins_since_last_move']);
+		if(($game['status'] == 1 || $game['status'] == 2) && ( $mins >= 10 )) {
+			
+			if($game['status'] == 1){
+				$status = 2;
+			}
+			else {
+				$status = 3;
+			}
+			
+			
+			$sql = "UPDATE games SET status=:status WHERE gid=:gid";
+			$cursor = oci_parse($this->db, $sql);
+			oci_bind_by_name($cursor, ':gid', $gameId, -1);
+			oci_bind_by_name($cursor, ':status', $status, -1);
+			$result = oci_execute($cursor);
+				
+			//check for error
+			if ($result == false){
+				$e = oci_error($cursor);
+				header("HTTP/1.1 400 Bad Request");
+				die(MESSAGE_DATABASE_ERROR);
+			}
+			
+			return "Player $status has won do to time restriction";
+			
+			
+		} 
 	
 
 		//return
@@ -324,7 +355,7 @@ class ApiModel {
 		}
 
 		//update db
-		$sql = "UPDATE games SET gameData=:gameData, status=:status, gameMode=:gameMode WHERE gid=:gid";
+		$sql = "UPDATE games SET gameData=:gameData, status=:status, gameMode=:gameMode, last_MOVE_dtm = SYSDATE WHERE gid=:gid";
 		if(DB_TYPE == "oracle"){
 			$cursor = oci_parse($this->db, $sql);
 			oci_bind_by_name($cursor, ':gid', $gameId, -1);
@@ -413,8 +444,16 @@ class ApiModel {
 	
 	private function getGame($gameId){
 		
-		$sql = "SELECT * FROM games WHERE gid=:gid";
-		
+		$sql = "SELECT
+			GID,
+			P1ID,
+			P2ID,
+			STATUS,
+			GAMEMODE,
+			GAMEDATA,
+			ROUND((SYSDATE-last_move_dtm)*1000*60, 0) as mins_since_last_move
+		FROM games 
+		WHERE gid=:gid";
 		
 		if(DB_TYPE == "oracle"){
 			$cursor = oci_parse($this->db, $sql);

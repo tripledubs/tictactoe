@@ -1,2 +1,35 @@
 DROP TABLE games;
-create table games ( gid varchar2(32), p1id varchar2(32), p2id varchar2(32), status number(2), gamemode varchar2(9), gamedata varchar2(255) );
+DROP SEQUENCE game_seq;
+
+
+CREATE TABLE games (
+  GID	NUMBER(10)    NOT NULL,
+  P1ID	VARCHAR2(32),
+  P2ID	VARCHAR2(32),
+  STATUS	number(2),
+  GAMEMODE	varchar2(9),
+  GAMEDATA	varchar2(255),
+  LAST_MOVE_DTM	DATE
+);
+
+ALTER TABLE games ADD (
+  CONSTRAINT game_pk PRIMARY KEY (GID));
+
+
+CREATE SEQUENCE gid_seq
+MINVALUE 1
+START WITH 1
+INCREMENT BY 1
+CACHE 10;
+
+
+CREATE OR REPLACE TRIGGER game_autoinc
+BEFORE INSERT ON games 
+FOR EACH ROW
+BEGIN
+  SELECT gid_seq.NEXTVAL
+  INTO   :new.gid
+  FROM   dual;
+END;
+/
+
