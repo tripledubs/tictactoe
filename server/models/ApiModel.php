@@ -162,7 +162,7 @@ class ApiModel {
 				die(MESSAGE_DATABASE_ERROR);
 			}
 			
-			return "Player $status has won do to time restriction";
+			return "Player $status has won due to time restriction";
 			
 			
 		} 
